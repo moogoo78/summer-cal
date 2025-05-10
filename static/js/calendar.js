@@ -40,15 +40,26 @@
     for (let d = 1; d <= totalDays; d++) {
       const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
       const cellDate = new Date(currentYear, currentMonth, d);
-      //console.log(dateStr, cellDate);
       const cell = document.createElement('div');
       cell.className = 'day';
-      cell.innerHTML = `<strong>${d}</strong>`;
+
+      // 新增日期標題區塊
+      const dayHeader = document.createElement('div');
+      dayHeader.className = 'day-header';
+      const dayNumber = document.createElement('strong');
+      dayNumber.textContent = d;
+      const dayName = document.createElement('span');
+      dayName.textContent = daysOfWeek[cellDate.getDay() === 0 ? 6 : cellDate.getDay() - 1];
+      dayHeader.appendChild(dayNumber);
+      dayHeader.appendChild(dayName);
+      cell.appendChild(dayHeader);
+
+      // 新增內容區塊
+      const dayContent = document.createElement('div');
+      dayContent.className = 'day-content';
+      cell.appendChild(dayContent);
 
       events.forEach(event => {
-        //const start = new Date(`${event.start} 00:00:00 GMT+0800`);
-        //const end = new Date(`${event.end} 00:00:00 GMT+0800`);
-        // date cannot parse in mobile
         const startList = event.start.split('-');
         const endList = event.end.split('-');
         if (startList.length == 3 && endList.length == 3) {
@@ -62,7 +73,7 @@
             ev.style.background = `hsl(${hue} 80% 80% / 50%)`;
             ev.style.borderLeftColor = `hsl(${hue} 80% 40% / 60%)`;
             ev.onclick = (e) => { handleClickDetail(e, event) };
-            cell.appendChild(ev);
+            dayContent.appendChild(ev);
           }
         } else {
           console.error(`error date format: ${event.start}/${event.end}`);
@@ -70,7 +81,7 @@
       });
 
       calendarEl.appendChild(cell);
-      }
+    }
   }
 
   function changeMonth(offset) {
